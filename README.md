@@ -1,4 +1,4 @@
-# sitefetch
+# @alloc/sitefetch
 
 Fetch an entire site and save it as a text file (to be used with AI models).
 
@@ -9,17 +9,17 @@ Fetch an entire site and save it as a text file (to be used with AI models).
 One-off usage (choose one of the followings):
 
 ```bash
-bunx sitefetch
-npx sitefetch
-pnpx sitefetch
+bunx @alloc/sitefetch
+npx @alloc/sitefetch
+pnpx @alloc/sitefetch
 ```
 
 Install globally (choose one of the followings):
 
 ```bash
-bun i -g sitefetch
-npm i -g sitefetch
-pnpm i -g sitefetch
+bun i -g @alloc/sitefetch
+npm i -g @alloc/sitefetch
+pnpm i -g @alloc/sitefetch
 ```
 
 ## Usage
@@ -31,6 +31,16 @@ sitefetch https://egoist.dev -o site.txt
 sitefetch https://egoist.dev -o site.txt --concurrency 10
 ```
 
+### Multiple starting URLs
+
+Pass multiple URLs as positional arguments to crawl more than one site at once:
+
+```bash
+sitefetch https://example.com https://other.com -o out.txt
+```
+
+Each URL is crawled independently within its own host and the results are merged into a single output.
+
 ### Match specific pages
 
 Use the `-m, --match` flag to specify the pages you want to fetch:
@@ -39,13 +49,23 @@ Use the `-m, --match` flag to specify the pages you want to fetch:
 sitefetch https://vite.dev -m "/blog/**" -m "/guide/**"
 ```
 
-The match pattern is tested against the pathname of target pages, powered by micromatch, you can check out all the supported [matching features](https://github.com/micromatch/micromatch#matching-features).
+The match pattern is tested against the pathname of target pages, powered by micromatch. Check out all the supported [matching features](https://github.com/micromatch/micromatch#matching-features).
+
+### Exclude pages
+
+Use the `-e, --exclude` flag to skip pages whose pathname matches a pattern:
+
+```bash
+sitefetch https://vite.dev -e "/blog/**" -e "/releases/**"
+```
+
+Multiple patterns can be passed. The starting URL is never excluded regardless of the patterns provided.
 
 ### Content selector
 
 We use [mozilla/readability](https://github.com/mozilla/readability) to extract readable content from the web page, but on some pages it might return irrelevant contents, in this case you can specify a CSS selector so we know where to find the readable content:
 
-```sitefetch
+```bash
 sitefetch https://vite.dev --content-selector ".content"
 ```
 
@@ -56,9 +76,14 @@ If you like this, please check out my LLM chat app: https://chatwise.app
 ## API
 
 ```ts
-import { fetchSite } from "sitefetch"
+import { fetchSite } from "@alloc/sitefetch"
 
 await fetchSite("https://egoist.dev", {
+  //...options
+})
+
+// multiple starting URLs
+await fetchSite(["https://example.com", "https://other.com"], {
   //...options
 })
 ```

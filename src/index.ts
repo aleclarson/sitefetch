@@ -78,6 +78,7 @@ class Fetcher {
 
     await this.#fetchPage(url, {
       skipMatch: true,
+      skipExclude: true,
     })
 
     await this.#queue.onIdle()
@@ -89,6 +90,7 @@ class Fetcher {
     url: string,
     options: {
       skipMatch?: boolean
+      skipExclude?: boolean
     }
   ) {
     const { host, pathname } = new URL(url)
@@ -111,6 +113,7 @@ class Fetcher {
 
     // return if excluded
     if (
+      !options.skipExclude &&
       this.options.exclude &&
       matchPath(pathname, this.options.exclude)
     ) {

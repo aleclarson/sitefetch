@@ -10,7 +10,7 @@ import { version } from "../package.json"
 const cli = cac("sitefetch")
 
 cli
-  .command("[url]", "Fetch a site")
+  .command("[...urls]", "Fetch a site")
   .option("-o, --outfile <path>", "Write the fetched site to a text file")
   .option("--concurrency <number>", "Number of concurrent requests", {
     default: 3,
@@ -29,8 +29,8 @@ cli
   .option("--content-selector <selector>", "The CSS selector to find content")
   .option("--limit <limit>", "Limit the result to this amount of pages")
   .option("--silent", "Do not print any logs")
-  .action(async (url, flags) => {
-    if (!url) {
+  .action(async (urls: string[], flags) => {
+    if (!urls || urls.length === 0) {
       cli.outputHelp()
       return
     }
@@ -39,7 +39,7 @@ cli
       logger.setLevel("silent")
     }
 
-    const pages = await fetchSite(url, {
+    const pages = await fetchSite(urls, {
       concurrency: flags.concurrency,
       retryDelay: flags.retryDelay,
       match: flags.match && ensureArray(flags.match),

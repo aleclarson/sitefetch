@@ -9,12 +9,12 @@ import { matchPath } from "./utils.ts"
 import type { Options, FetchSiteResult } from "./types.ts"
 
 export async function fetchSite(
-  url: string,
+  url: string | string[],
   options: Options
 ): Promise<FetchSiteResult> {
   const fetcher = new Fetcher(options)
 
-  return fetcher.fetchSite(url)
+  return fetcher.fetchSite(Array.isArray(url) ? url : [url])
 }
 
 class Fetcher {
@@ -69,17 +69,21 @@ class Fetcher {
     return this.options.contentSelector
   }
 
-  async fetchSite(url: string) {
+  async fetchSite(urls: string[]) {
     logger.info(
-      `Started fetching ${c.green(url)} with a concurrency of ${
+      `Started fetching ${urls.map((u) => c.green(u)).join(", ")} with a concurrency of ${
         this.#queue.concurrency
       }`
     )
 
-    await this.#fetchPage(url, {
-      skipMatch: true,
-      skipExclude: true,
-    })
+    await Promise.all(
+      urls.map((url) =>
+        this.#fetchPage(url, {
+          skipMatch: true,
+          skipExclude: true,
+        })
+      )
+    )
 
     await this.#queue.onIdle()
 

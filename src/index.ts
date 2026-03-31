@@ -182,7 +182,7 @@ class Fetcher {
     if (extraUrls.length > 0) {
       for (const url of extraUrls) {
         this.#queue.add(() =>
-          this.#fetchPage(url, { ...options, skipMatch: false })
+          this.#fetchPage(url, { skipMatch: false, skipExclude: false })
         )
       }
     }

@@ -1,6 +1,6 @@
 {
   "name": "@alloc/sitefetch",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fetch an entire site and save it as a text file",
   "bin": "./dist/cli.js",
   "main": "./dist/index.js",

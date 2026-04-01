@@ -59,7 +59,11 @@ class Fetcher {
   }
 
   #limitReached() {
-    return this.options.limit && this.#pages.size >= this.options.limit
+    return (
+      this.options.limit != null &&
+      this.options.limit > 0 &&
+      this.#pages.size >= this.options.limit
+    )
   }
 
   #getContentSelector(pathname: string) {
@@ -179,7 +183,7 @@ class Fetcher {
       }
     })
 
-    if (extraUrls.length > 0) {
+    if (extraUrls.length > 0 && this.options.limit !== 0) {
       for (const url of extraUrls) {
         this.#queue.add(() =>
           this.#fetchPage(url, { skipMatch: false, skipExclude: false })

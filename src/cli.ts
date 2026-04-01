@@ -45,7 +45,7 @@ cli
       match: flags.match && ensureArray(flags.match),
       exclude: flags.exclude && ensureArray(flags.exclude),
       contentSelector: flags.contentSelector,
-      limit: flags.limit,
+      limit: flags.limit !== undefined ? Number(flags.limit) : undefined,
     })
 
     if (pages.size === 0) {

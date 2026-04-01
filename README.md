@@ -61,6 +61,18 @@ sitefetch https://vite.dev -e "/blog/**" -e "/releases/**"
 
 Multiple patterns can be passed. The starting URL is never excluded regardless of the patterns provided.
 
+### Limit crawled pages
+
+Use `--limit` to cap the number of pages fetched. Pass `0` to disable link-following entirely — only the explicitly provided URLs will be fetched:
+
+```bash
+# fetch at most 20 pages
+sitefetch https://vite.dev --limit 20
+
+# fetch only the given URLs, no link crawling
+sitefetch https://vite.dev/guide/introduction https://vite.dev/guide/getting-started --limit 0
+```
+
 ### Content selector
 
 We use [mozilla/readability](https://github.com/mozilla/readability) to extract readable content from the web page, but on some pages it might return irrelevant contents, in this case you can specify a CSS selector so we know where to find the readable content:

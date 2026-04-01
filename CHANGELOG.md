@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+### Bug Fixes
+
+- **`--limit 0`** now correctly restricts crawling to only the explicitly provided URLs. Previously, `0` was treated as "no limit" due to a falsy check, causing the flag to be ignored entirely.
+
 ## 0.1.0
 
 ### Features

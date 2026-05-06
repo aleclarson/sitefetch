@@ -1,6 +1,6 @@
 import path from "node:path"
 import fs from "node:fs"
-import { command, run, string, number, restPositionals, option, array, optional, boolean, flag } from "cmd-ts"
+import { command, run, string, number, restPositionals, option, multioption, array, optional, flag } from "cmd-ts"
 import { encode } from "gpt-tokenizer/model/gpt-4o"
 import { fetchSite, serializePages } from "./index.ts"
 import { logger } from "./logger.ts"
@@ -42,7 +42,7 @@ const cli = command({
       defaultValue: () => 30000,
       description: "delay in ms before retrying on rate limit",
     }),
-    exclude: option({
+    exclude: multioption({
       type: array(string),
       long: "exclude",
       short: "e",

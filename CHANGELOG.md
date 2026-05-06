@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.4
+
+### Security
+
+- Updated `happy-dom` to resolve security vulnerabilities.
+
+*(Note: 0.1.3 was intentionally omitted as no source code changed.)*
+
 ## 0.1.2
 
 ### Bug Fixes

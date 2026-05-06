@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 import Queue from "p-queue"
 import { readdown } from "readdown"
 import c from "picocolors"
@@ -18,6 +19,7 @@ export async function fetchSite(
 class Fetcher {
   #pages: FetchSiteResult = new Map()
   #fetched: Set<string> = new Set()
+  #contentHashes: Set<string> = new Set()
   #queue: Queue
 
   constructor(public options: Options) {
@@ -236,6 +238,16 @@ class Fetcher {
     if (!result.markdown.trim()) {
       return
     }
+
+    const contentHash = createHash("md5")
+      .update(result.markdown)
+      .digest("hex")
+
+    if (this.#contentHashes.has(contentHash)) {
+      return
+    }
+
+    this.#contentHashes.add(contentHash)
 
     this.#pages.set(pathname, {
       title: result.metadata.title || pageTitle,

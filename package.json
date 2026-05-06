@@ -23,6 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0",
+    "cmd-ts": "^0.15.0",
     "gpt-tokenizer": "^2.8.1",
     "micromatch": "^4.0.8",
     "readdown": "^0.2.4"
@@ -30,7 +31,6 @@
   "devDependencies": {
     "@types/bun": "^1.1.15",
     "@types/micromatch": "^4.0.9",
-    "cac": "^6.7.14",
     "p-queue": "^8.0.1",
     "picocolors": "^1.1.1",
     "rolldown": "^1.0.0-beta.1",

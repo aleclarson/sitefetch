@@ -4,7 +4,7 @@ import { command, run, string, number, restPositionals, option, multioption, arr
 import { encode } from "gpt-tokenizer/model/gpt-4o"
 import { fetchSite, serializePages } from "./index.ts"
 import { logger } from "./logger.ts"
-import { ensureArray, formatNumber } from "./utils.ts"
+import { formatNumber } from "./utils.ts"
 import { createRequire } from "node:module"
 
 const require = createRequire(import.meta.url)
@@ -49,10 +49,11 @@ const cli = command({
       defaultValue: () => [],
       description: "exclude matching paths",
     }),
-    match: option({
-      type: optional(string),
+    match: multioption({
+      type: array(string),
       long: "match",
       short: "m",
+      defaultValue: () => [],
       description: "only fetch matched pages",
     }),
     follow: flag({
@@ -83,8 +84,8 @@ const cli = command({
     const pages = await fetchSite(args.urls, {
       concurrency: args.concurrency,
       retryDelay: args.retryDelay,
-      match: args.match ? ensureArray(args.match) : undefined,
-      exclude: args.exclude.length > 0 ? ensureArray(args.exclude) : undefined,
+      match: args.match.length > 0 ? args.match : undefined,
+      exclude: args.exclude.length > 0 ? args.exclude : undefined,
       follow: args.follow,
       contentSelector: args.contentSelector,
       limit: args.limit,

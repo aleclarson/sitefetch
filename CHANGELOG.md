@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+### Features
+
+- Switched to `readdown` instead of `@mozilla/readability` + `turndown` + `happy-dom` for HTML-to-Markdown conversion. This dramatically reduces dependencies and footprint.
+
 ## 0.1.5
 
 ### Bug Fixes

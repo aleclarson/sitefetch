@@ -1,8 +1,6 @@
 import Queue from "p-queue"
-import { Window } from "happy-dom"
-import { Readability } from "@mozilla/readability"
+import { readdown } from "readdown"
 import c from "picocolors"
-import { toMarkdown } from "./to-markdown.ts"
 import { logger } from "./logger.ts"
 import { load } from "cheerio"
 import { matchPath } from "./utils.ts"
@@ -199,15 +197,6 @@ class Fetcher {
       }
     }
 
-    const window = new Window({
-      url,
-      settings: {
-        disableJavaScriptFileLoading: true,
-        disableJavaScriptEvaluation: true,
-        disableCSSFileLoading: true,
-      },
-    })
-
     const pageTitle = $("title").text()
     const contentSelector = this.#getContentSelector(pathname)
     const html = contentSelector
@@ -219,24 +208,20 @@ class Fetcher {
       return
     }
 
-    window.document.write(html)
+    const result = readdown(html, {
+      url,
+      includeHeader: false,
+      raw: !!contentSelector,
+    })
 
-    await window.happyDOM.waitUntilComplete()
-
-    const article = new Readability(window.document as any).parse()
-
-    await window.happyDOM.close()
-
-    if (!article) {
+    if (!result.markdown.trim()) {
       return
     }
 
-    const content = toMarkdown(article.content)
-
     this.#pages.set(pathname, {
-      title: article.title || pageTitle,
+      title: result.metadata.title || pageTitle,
       url,
-      content,
+      content: result.markdown,
     })
   }
 }

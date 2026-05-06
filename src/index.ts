@@ -31,10 +31,15 @@ class Fetcher {
     maxRetries = 3
   ): Promise<Response> {
     const retryDelay = this.options.retryDelay ?? 30000
-    let lastError: Response | undefined
+    let lastError: Error | Response | undefined
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
-      const res = await (this.options.fetch || fetch)(url, init)
+      let res: Response
+      try {
+        res = await (this.options.fetch || fetch)(url, init)
+      } catch (error) {
+        throw new Error(`Failed to fetch ${url}: ${error instanceof Error ? error.message : String(error)}`, { cause: error })
+      }
 
       if (res.status !== 429) {
         return res

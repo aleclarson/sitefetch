@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+### Bug Fixes
+
+- Catch fetch errors and surface the exact URL that failed to fetch.
+
 ## 0.2.0
 
 ### Features

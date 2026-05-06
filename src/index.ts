@@ -173,6 +173,7 @@ class Fetcher {
 
       try {
         const thisUrl = new URL(href, url)
+        thisUrl.hash = ""
         if (thisUrl.host !== host) {
           return
         }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+### Bug Fixes
+
+- Log network fetch errors and skip the bad URL instead of crashing the entire process.
+
 ## 0.2.1
 
 ### Bug Fixes

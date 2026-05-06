@@ -133,11 +133,17 @@ class Fetcher {
 
     logger.info(`Fetching ${c.green(url)}`)
 
-    const res = await this.#fetchWithRetry(url, {
-      headers: {
-        "user-agent": "Sitefetch (https://github.com/egoist/sitefetch)",
-      },
-    })
+    let res: Response
+    try {
+      res = await this.#fetchWithRetry(url, {
+        headers: {
+          "user-agent": "Sitefetch (https://github.com/egoist/sitefetch)",
+        },
+      })
+    } catch (err) {
+      logger.warn(`Failed to fetch ${url}: ${err instanceof Error ? err.message : String(err)}`)
+      return
+    }
 
     if (!res.ok) {
       logger.warn(`Failed to fetch ${url}: ${res.statusText}`)

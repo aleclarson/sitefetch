@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5
+
+### Bug Fixes
+
+- Fixed an issue where the crawler would abort on redirects between `www.` and non-`www.` variations of a host. Closes [egoist/sitefetch#24](https://github.com/egoist/sitefetch/issues/24).
+
 ## 0.1.4
 
 ### Security

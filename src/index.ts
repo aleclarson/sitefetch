@@ -156,8 +156,15 @@ class Fetcher {
 
     // redirected to other site, ignore
     if (resUrl.host !== host) {
-      logger.warn(`Redirected from ${host} to ${resUrl.host}`)
-      return
+      if (
+        (resUrl.host === "www." + host) ||
+        ("www." + resUrl.host === host)
+      ) {
+        // tolerate www vs non-www
+      } else {
+        logger.warn(`Redirected from ${host} to ${resUrl.host}`)
+        return
+      }
     }
     const extraUrls: string[] = []
 
@@ -174,7 +181,7 @@ class Fetcher {
       try {
         const thisUrl = new URL(href, url)
         thisUrl.hash = ""
-        if (thisUrl.host !== host) {
+        if (thisUrl.host !== host && thisUrl.host !== resUrl.host) {
           return
         }
 

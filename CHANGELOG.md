@@ -1,11 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.2.5
 
 ### Refactors
 
 - Migrate from `cac` to `cmd-ts` for CLI argument parsing.
-- Migrate from `npm` to `bun` for package management.
 
 ## 0.2.4
 

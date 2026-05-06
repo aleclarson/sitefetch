@@ -51,6 +51,12 @@ sitefetch https://vite.dev -m "/blog/**" -m "/guide/**"
 
 The match pattern is tested against the pathname of target pages, powered by micromatch. Check out all the supported [matching features](https://github.com/micromatch/micromatch#matching-features).
 
+If you want the crawler to continue finding links on pages that don't match your `-m` filters (acting as stepping stones to pages that *do* match), use the `-f, --follow` flag:
+
+```bash
+sitefetch https://vite.dev -m "/guide/**" -f
+```
+
 ### Exclude pages
 
 Use the `-e, --exclude` flag to skip pages whose pathname matches a pattern:
@@ -75,7 +81,7 @@ sitefetch https://vite.dev/guide/introduction https://vite.dev/guide/getting-sta
 
 ### Content selector
 
-We use [mozilla/readability](https://github.com/mozilla/readability) to extract readable content from the web page, but on some pages it might return irrelevant contents, in this case you can specify a CSS selector so we know where to find the readable content:
+We use [readdown](https://github.com/zcag/readdown) to extract readable content from the web page and convert it to markdown, but on some pages it might return irrelevant contents, in this case you can specify a CSS selector so we know where to find the readable content:
 
 ```bash
 sitefetch https://vite.dev --content-selector ".content"

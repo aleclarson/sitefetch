@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+### Bug Fixes
+
+- Strip `#` fragments from discovered links before following them. This avoids redundant fetching of the same page with different anchors.
+
 ## 0.1.1
 
 ### Bug Fixes

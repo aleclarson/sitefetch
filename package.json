@@ -15,7 +15,11 @@
     "prepublishOnly": "bun run build"
   },
   "keywords": [],
-  "author": "EGOIST <hi@egoist.dev>",
+  "repository": "https://github.com/aleclarson/sitefetch",
+  "author": "Alec Larson",
+  "contributors": [
+    "EGOIST <hi@egoist.dev>"
+  ],
   "license": "MIT",
   "dependencies": {
     "happy-dom": "^16.5.3",

@@ -26,6 +26,7 @@ cli
     array: true,
   })
   .option("-m, --match <pattern>", "Only fetch matched pages")
+  .option("-f, --follow", "Follow links on un-matched pages")
   .option("--content-selector <selector>", "The CSS selector to find content")
   .option("--limit <limit>", "Limit the result to this amount of pages")
   .option("--silent", "Do not print any logs")
@@ -44,6 +45,7 @@ cli
       retryDelay: flags.retryDelay,
       match: flags.match && ensureArray(flags.match),
       exclude: flags.exclude && ensureArray(flags.exclude),
+      follow: flags.follow,
       contentSelector: flags.contentSelector,
       limit: flags.limit !== undefined ? Number(flags.limit) : undefined,
     })

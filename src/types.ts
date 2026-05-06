@@ -9,6 +9,12 @@ export type Options = {
   match?: string[]
 
   /**
+   * Always visit matching links to crawl further, even if the current page doesn't match `match` pattern
+   * This allows discovering pages that we want to extract
+   */
+  follow?: boolean
+
+  /**
    * The CSS selector to find content
    */
   contentSelector?:

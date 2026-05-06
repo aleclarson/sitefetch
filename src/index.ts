@@ -107,22 +107,22 @@ class Fetcher {
 
     this.#fetched.add(pathname)
 
-    // return if not matched
-    // we don't need to extract content for this page
-    if (
-      !options.skipMatch &&
-      this.options.match &&
-      !matchPath(pathname, this.options.match)
-    ) {
-      return
-    }
-
-    // return if excluded
-    if (
+    const isExcluded =
       !options.skipExclude &&
       this.options.exclude &&
       matchPath(pathname, this.options.exclude)
-    ) {
+
+    if (isExcluded && !this.options.follow) {
+      return
+    }
+
+    const isMatched =
+      options.skipMatch ||
+      !this.options.match ||
+      matchPath(pathname, this.options.match)
+
+    // return if not matched and we don't want to follow links on this page
+    if (!isMatched && !this.options.follow) {
       return
     }
 
@@ -201,6 +201,10 @@ class Fetcher {
           this.#fetchPage(url, { skipMatch: false, skipExclude: false })
         )
       }
+    }
+
+    if (isExcluded || !isMatched) {
+      return
     }
 
     const pageTitle = $("title").text()

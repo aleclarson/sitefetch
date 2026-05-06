@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+### Features
+
+- Added a `-f, --follow` option that allows the crawler to visit and extract links from pages that do not match the `--match` / `--exclude` patterns. This is useful for using non-matching pages as "stepping stones" to discover content pages.
+
 ## 0.2.2
 
 ### Bug Fixes

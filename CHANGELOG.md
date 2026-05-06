@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.4
+
+### Bug Fixes
+
+- When a link fails to fetch or returns 404, the warning log now includes the URL of the page where the broken link was discovered. Inspired by [egoist/sitefetch#21](https://github.com/egoist/sitefetch/pull/21).
+
 ## 0.2.3
 
 ### Features

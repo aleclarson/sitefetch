@@ -97,6 +97,7 @@ class Fetcher {
     options: {
       skipMatch?: boolean
       skipExclude?: boolean
+      referer?: string
     }
   ) {
     const { host, pathname } = new URL(url)
@@ -136,12 +137,20 @@ class Fetcher {
         },
       })
     } catch (err) {
-      logger.warn(`Failed to fetch ${url}: ${err instanceof Error ? err.message : String(err)}`)
+      let msg = `Failed to fetch ${url}: ${err instanceof Error ? err.message : String(err)}`
+      if (options.referer) {
+        msg += `\n  (discovered from ${options.referer})`
+      }
+      logger.warn(msg)
       return
     }
 
     if (!res.ok) {
-      logger.warn(`Failed to fetch ${url}: ${res.statusText}`)
+      let msg = `Failed to fetch ${url}: ${res.statusText}`
+      if (res.status === 404 && options.referer) {
+        msg += `\n  (discovered from ${options.referer})`
+      }
+      logger.warn(msg)
       return
     }
 
@@ -196,9 +205,9 @@ class Fetcher {
     })
 
     if (extraUrls.length > 0 && this.options.limit !== 0) {
-      for (const url of extraUrls) {
+      for (const extraUrl of extraUrls) {
         this.#queue.add(() =>
-          this.#fetchPage(url, { skipMatch: false, skipExclude: false })
+          this.#fetchPage(extraUrl, { skipMatch: false, skipExclude: false, referer: url })
         )
       }
     }

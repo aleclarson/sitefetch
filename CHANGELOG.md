@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.6
+
+### Features
+
+- Deduplicate fetched pages by computing an MD5 hash of each page's generated Markdown content.
+
 ## 0.2.5
 
 ### Refactors

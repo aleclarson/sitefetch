@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Refactors
+
+- Switched HTML-to-Markdown extraction from `readdown` to `Defuddle`.
+
 ## 0.2.6
 
 ### Features

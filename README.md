@@ -81,7 +81,7 @@ sitefetch https://vite.dev/guide/introduction https://vite.dev/guide/getting-sta
 
 ### Content selector
 
-We use [readdown](https://github.com/zcag/readdown) to extract readable content from the web page and convert it to markdown, but on some pages it might return irrelevant contents, in this case you can specify a CSS selector so we know where to find the readable content:
+We use [Defuddle](https://defuddle.md/docs) to extract readable content from the web page and convert it to markdown, but on some pages it might return irrelevant contents. In this case, you can specify a CSS selector so we know where to find the readable content:
 
 ```bash
 sitefetch https://vite.dev --content-selector ".content"

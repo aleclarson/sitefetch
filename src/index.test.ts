@@ -76,3 +76,23 @@ test("keeps pages with distinct markdown output", async () => {
 
   expect(pages.size).toBe(2)
 })
+
+test("uses content selector for readable content", async () => {
+  const pages = await fetchSite("https://example.com/a", {
+    contentSelector: ".wanted",
+    fetch: createFetch({
+      "https://example.com/a": `<!doctype html>
+        <html>
+          <head><title>Selector test</title></head>
+          <body>
+            <main><h1>Other heading</h1><p>Drop this copy.</p></main>
+            <section class="wanted"><h1>Wanted heading</h1><p>Keep this copy.</p></section>
+          </body>
+        </html>`,
+    }),
+  })
+
+  const page = pages.get("/a")
+  expect(page?.content).toContain("Keep this copy.")
+  expect(page?.content).not.toContain("Drop this copy.")
+})

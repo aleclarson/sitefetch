@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto"
 import Queue from "p-queue"
-import { readdown } from "readdown"
+import { Defuddle } from "defuddle/node"
+import { parseHTML } from "linkedom"
 import c from "picocolors"
 import { logger } from "./logger.ts"
-import { load } from "cheerio"
 import { matchPath } from "./utils.ts"
 import type { Options, FetchSiteResult } from "./types.ts"
 
@@ -183,28 +183,33 @@ class Fetcher {
     }
     const extraUrls: string[] = []
 
-    const $ = load(await res.text())
-    $("script,style,link,img,video").remove()
+    const { document } = parseHTML(await res.text())
 
-    $("a").each((_, el) => {
-      const href = $(el).attr("href")
+    for (const el of Array.from(
+      document.querySelectorAll("script,style,link,img,video")
+    )) {
+      el.remove()
+    }
+
+    for (const el of Array.from(document.querySelectorAll("a"))) {
+      const href = el.getAttribute("href")
 
       if (!href) {
-        return
+        continue
       }
 
       try {
         const thisUrl = new URL(href, url)
         thisUrl.hash = ""
         if (thisUrl.host !== host && thisUrl.host !== resUrl.host) {
-          return
+          continue
         }
 
         extraUrls.push(thisUrl.href)
       } catch {
         logger.warn(`Failed to parse URL: ${href}`)
       }
-    })
+    }
 
     if (extraUrls.length > 0 && this.options.limit !== 0) {
       for (const extraUrl of extraUrls) {
@@ -218,30 +223,32 @@ class Fetcher {
       return
     }
 
-    const pageTitle = $("title").text()
+    const pageTitle = document.querySelector("title")?.textContent ?? ""
     const contentSelector = this.#getContentSelector(pathname)
-    const html = contentSelector
-      ? $(contentSelector).prop("outerHTML")
-      : $.html()
 
-    if (!html) {
+    const contentElement = contentSelector
+      ? document.querySelector(contentSelector)
+      : document.body
+
+    if (contentSelector && !contentElement) {
       logger.warn(`No readable content on ${pathname}`)
       return
     }
 
-    const result = readdown(html, {
-      url,
-      includeHeader: false,
-      raw: !!contentSelector,
-    })
+    // Defuddle can return empty content for tiny pages, e.g. heading-only docs stubs.
+    const fallbackContent = contentElement?.textContent?.trim() ?? ""
 
-    if (!result.markdown.trim()) {
+    const result = await Defuddle(document, url, {
+      markdown: true,
+      contentSelector,
+    })
+    const content = result.content.trim() ? result.content : fallbackContent
+
+    if (!content.trim()) {
       return
     }
 
-    const contentHash = createHash("md5")
-      .update(result.markdown)
-      .digest("hex")
+    const contentHash = createHash("md5").update(content).digest("hex")
 
     if (this.#contentHashes.has(contentHash)) {
       return
@@ -250,9 +257,9 @@ class Fetcher {
     this.#contentHashes.add(contentHash)
 
     this.#pages.set(pathname, {
-      title: result.metadata.title || pageTitle,
+      title: result.title || pageTitle,
       url,
-      content: result.markdown,
+      content,
     })
   }
 }

@@ -22,11 +22,11 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "cheerio": "^1.0.0",
     "cmd-ts": "^0.15.0",
+    "defuddle": "^0.18.1",
     "gpt-tokenizer": "^2.8.1",
-    "micromatch": "^4.0.8",
-    "readdown": "^0.2.4"
+    "linkedom": "^0.18.12",
+    "micromatch": "^4.0.8"
   },
   "devDependencies": {
     "@types/bun": "^1.1.15",

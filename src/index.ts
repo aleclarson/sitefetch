@@ -3,7 +3,7 @@ import Queue from "p-queue"
 import { readdown } from "readdown"
 import c from "picocolors"
 import { logger } from "./logger.ts"
-import { load } from "cheerio"
+import { parseHTML } from "linkedom"
 import { matchPath } from "./utils.ts"
 import type { Options, FetchSiteResult } from "./types.ts"
 
@@ -183,11 +183,13 @@ class Fetcher {
     }
     const extraUrls: string[] = []
 
-    const $ = load(await res.text())
-    $("script,style,link,img,video").remove()
+    const { document } = parseHTML(await res.text())
+    document
+      .querySelectorAll("script,style,link,img,video")
+      .forEach((el) => el.remove())
 
-    $("a").each((_, el) => {
-      const href = $(el).attr("href")
+    document.querySelectorAll("a").forEach((el) => {
+      const href = el.getAttribute("href")
 
       if (!href) {
         return
@@ -218,11 +220,11 @@ class Fetcher {
       return
     }
 
-    const pageTitle = $("title").text()
+    const pageTitle = document.querySelector("title")?.textContent ?? ""
     const contentSelector = this.#getContentSelector(pathname)
     const html = contentSelector
-      ? $(contentSelector).prop("outerHTML")
-      : $.html()
+      ? document.querySelector(contentSelector)?.outerHTML
+      : document.toString()
 
     if (!html) {
       logger.warn(`No readable content on ${pathname}`)

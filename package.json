@@ -22,9 +22,9 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "cheerio": "^1.0.0",
     "cmd-ts": "^0.15.0",
     "gpt-tokenizer": "^2.8.1",
+    "linkedom": "^0.18.12",
     "micromatch": "^4.0.8",
     "readdown": "^0.2.4"
   },

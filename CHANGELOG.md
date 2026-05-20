@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.7
+
+### Refactors
+
+- Replace Cheerio with LinkeDOM for HTML parsing, reducing the dependency footprint by reusing the DOM parser stack already used by `readdown`.
+
+### Dependencies
+
+- Update `readdown` to 0.2.5.
+
 ## 0.2.6
 
 ### Features

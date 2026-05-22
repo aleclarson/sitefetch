@@ -7,6 +7,16 @@ import { parseHTML } from "linkedom"
 import { matchPath } from "./utils.ts"
 import type { Options, FetchSiteResult } from "./types.ts"
 
+export type { Options, Page, FetchSiteResult } from "./types.ts"
+
+/**
+ * Crawl one or more starting URLs and return extracted Markdown pages.
+ *
+ * Each starting URL is fetched within its own host boundary. Results from all
+ * starting URLs are merged into a single map keyed by pathname. Failed requests,
+ * non-HTML responses, unreadable pages, and duplicate Markdown output are
+ * skipped instead of rejecting the whole crawl.
+ */
 export async function fetchSite(
   url: string | string[],
   options: Options
@@ -259,6 +269,12 @@ class Fetcher {
   }
 }
 
+/**
+ * Serialize fetched pages for files, stdout, or prompt input.
+ *
+ * The `text` format wraps each page in a simple XML-like `<page>` block. The
+ * `json` format returns an array of page objects in insertion order.
+ */
 export function serializePages(
   pages: FetchSiteResult,
   format: "json" | "text"

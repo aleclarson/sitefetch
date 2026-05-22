@@ -1,3 +1,8 @@
+---
+name: sitefetch
+description: Crawl same-host websites from the CLI and convert readable HTML pages to Markdown or JSON for LLM context.
+---
+
 # Sitefetch CLI
 
 Use `sitefetch` to crawl same-host HTML pages and convert readable content to Markdown for LLM context, audits, or downstream processing.

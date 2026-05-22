@@ -1,100 +1,80 @@
 # Sitefetch CLI
 
-Use `sitefetch` when you need to crawl website pages and turn readable HTML into Markdown/text for LLM context, audits, or downstream processing.
+Use `sitefetch` to crawl same-host HTML pages and convert readable content to Markdown for LLM context, audits, or downstream processing.
 
-## Command
+## Invocation
 
 ```bash
 sitefetch <url...> [options]
+# or one-off:
+bunx @alloc/sitefetch <url...> [options]
+npx @alloc/sitefetch <url...> [options]
+pnpx @alloc/sitefetch <url...> [options]
 ```
 
-Run without installing with one of:
+Prefer `-o <file>` for agent workflows; crawls can produce large stdout.
+
+## Common commands
 
 ```bash
-bunx @alloc/sitefetch <url...>
-npx @alloc/sitefetch <url...>
-pnpx @alloc/sitefetch <url...>
-```
-
-If installed globally, use:
-
-```bash
-sitefetch <url...>
-```
-
-## Core examples
-
-```bash
-# Print crawled pages to stdout in text format.
-sitefetch https://example.com
-
-# Save text output.
+# Crawl a site and save text output.
 sitefetch https://example.com -o site.txt
 
-# Save JSON output. The .json extension selects JSON format.
+# Save JSON output. A .json outfile selects JSON automatically.
 sitefetch https://example.com -o site.json
 
-# Crawl multiple starting URLs and merge results.
+# Fetch only explicit URLs; do not crawl discovered links.
+sitefetch https://example.com/a https://example.com/b --limit 0 -o pages.txt
+
+# Crawl several starting URLs and merge results.
 sitefetch https://example.com https://other.com -o out.txt
+
+# Speed up a small/trusted site.
+sitefetch https://example.com --concurrency 10 -o site.txt
 ```
 
-## Options
+## Options quick reference
 
-- `-o, --outfile <path>`: write output to a file. Defaults to stdout. Files ending in `.json` use JSON; other paths use text.
-- `--concurrency <number>`: maximum simultaneous requests. Default: `3`.
-- `--retry-delay <ms>`: delay before retrying a `429` response. Default: `30000`.
-- `-m, --match <pattern>`: include only pathnames matching a micromatch pattern. Repeat for multiple patterns.
-- `-e, --exclude <pattern>`: exclude pathnames matching a micromatch pattern. Repeat for multiple patterns.
-- `-f, --follow`: keep crawling links from pages that fail `--match` or `--exclude`, but do not include those pages in output.
-- `--content-selector <selector>`: extract Markdown from a CSS-selected element instead of the whole cleaned document.
-- `--limit <number>`: maximum result pages. Use `0` to disable link crawling and fetch only explicit URLs.
+- `-o, --outfile <path>`: write output. `.json` => JSON array; anything else => text `<page>` blocks. Default: stdout.
+- `--concurrency <n>`: parallel request limit. Default: `3`.
+- `--retry-delay <ms>`: wait before retrying HTTP `429`. Default: `30000`.
+- `-m, --match <pattern>`: include only matching pathnames. Repeatable.
+- `-e, --exclude <pattern>`: skip matching pathnames. Repeatable.
+- `-f, --follow`: traverse non-included pages to discover included pages.
+- `--content-selector <selector>`: convert only the selected element, e.g. `main`, `.content`, `article`.
+- `--limit <n>`: max result pages. `0` means fetch only explicit URLs.
 - `--silent`: suppress logs.
 
-## Filtering rules
+## Filtering model
 
-Patterns are matched against `URL.pathname`, e.g. `/docs/intro`, not the full URL.
-
-```bash
-# Include docs and blog pages.
-sitefetch https://vite.dev -m "/guide/**" -m "/blog/**"
-
-# Exclude release and blog pages.
-sitefetch https://vite.dev -e "/releases/**" -e "/blog/**"
-```
-
-By default, non-matching or excluded pages are not fetched, so their links are not discovered. Add `--follow` when navigation/index pages are needed as stepping stones:
+`--match` and `--exclude` use micromatch patterns against `URL.pathname` only, e.g. `/docs/intro`, not the full URL.
 
 ```bash
+# Include docs/blog paths.
+sitefetch https://vite.dev -m "/guide/**" -m "/blog/**" -o vite.txt
+
+# Exclude noisy sections.
+sitefetch https://vite.dev -e "/blog/**" -e "/releases/**" -o vite.txt
+
+# Important for docs sites: allow homepage/section pages to lead to matches.
 sitefetch https://vite.dev -m "/guide/**" --follow -o vite-guide.txt
 ```
 
-The starting URL is always fetched even if it does not match filters or matches an exclude pattern.
+Without `--follow`, pages that fail filters are not traversed, so their links are not discovered. The starting URL is always fetched regardless of filters.
 
-## Scope and output behavior
+## Scope and output
 
-- Crawling stays on the same host as each starting URL.
-- `www.` and non-`www.` redirects are tolerated; redirects to other hosts are skipped.
-- Only HTML pages are converted.
-- Failed requests, non-HTML responses, unreadable pages, and duplicate Markdown pages are skipped with warnings.
-- Text output contains repeated `<page>` blocks with `<title>`, `<url>`, and `<content>`.
-- JSON output is an array of page objects: `{ "title", "url", "content" }`.
+- Crawl scope is same-host per starting URL.
+- `www.` ↔ non-`www.` redirects are allowed; other cross-host redirects are skipped.
+- Only HTML responses are converted.
+- Failed requests, non-HTML pages, unreadable pages, and duplicate Markdown output are skipped with warnings.
+- Text output: repeated `<page><title>...<url>...<content>...</content></page>` blocks.
+- JSON output: array of `{ "title", "url", "content" }` objects.
 
-## Practical recipes
+## Agent heuristics
 
-```bash
-# Capture only two exact pages, no crawl.
-sitefetch https://example.com/a https://example.com/b --limit 0 -o pages.txt
-
-# Faster crawl for small/trusted sites.
-sitefetch https://example.com --concurrency 10 -o site.txt
-
-# Use a stable content container to avoid nav/sidebar noise.
-sitefetch https://docs.example.com --content-selector main -o docs.txt
-
-# Quiet command suitable for scripts.
-sitefetch https://example.com --silent -o site.txt
-```
-
-## Agent guidance
-
-Prefer writing to a file when output may be large. Use `--limit` for exploratory runs. Use `--content-selector` when output includes navigation, headers, footers, or sidebars. Use `--match` plus `--follow` for documentation sites where the homepage links to the desired section.
+- Start with `--limit 5` or `--limit 10` when exploring unknown sites.
+- Use `--content-selector main` or `--content-selector article` if output includes nav/sidebar/footer noise.
+- Use `--match` + `--follow` for documentation sections reached through a homepage or sidebar.
+- Use `--silent` in scripts when logs would pollute captured stdout.
+- Prefer JSON when another tool will parse the result; prefer text for direct LLM context.
